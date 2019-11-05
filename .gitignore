@@ -1,0 +1,6 @@
+dataset/
+*.pyc
+.vscode
+.vector_cache
+.ipynb_checkpoints
+run_log
