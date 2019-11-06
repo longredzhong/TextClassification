@@ -18,7 +18,8 @@ class BaseConfig():
         "first":[242, 1550, 15817, 9805, 56486, 21698, 1074, 1248, 7178, 1238, 25728, 57869, 314, 8565, 24220, 21822, 16601, 2615, 2396, 24788, 30971, 15943]
     }
     UseLabel = "last"
-
+    UseInput = "word"
+    learning_rate = 0.0001
 
 if __name__ == "__main__":
     b = BaseConfig()
