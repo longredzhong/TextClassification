@@ -37,3 +37,19 @@ for i in val_iter:
 
 # %%
 next(iter(val_iter))
+#%%
+from TextClassification.dataloader import GetLoader
+l = GetLoader("ECommerce")
+
+# %%
+from config.TestConfig import TestConfig
+
+conifg = TestConfig()
+a, b = l(conifg)
+
+# %%
+conifg.WordVectors
+
+# %%
+import torch
+torch.tensor(conifg.WordVectors,requires_grad=True)

@@ -8,7 +8,7 @@ class WordTCN(nn.Module):
         self.WordEmbedding = nn.Embedding(config.WordVocabSize,
         config.WordVectorsDim)
         if config.WordVectors is not None:
-            self.WordEmbedding.weight.copy_(config.WordVectors)
+            self.WordEmbedding.weight.data.copy_(config.WordVectors)
         self.num_channels_word = [300,300,300,300]
         self.label_size = config.Label[config.UseLabel]
         self.TCN_word = TemporalConvNet(num_inputs=300,num_channels=self.num_channels_word,kernel_size=2,dropout=0.2)
