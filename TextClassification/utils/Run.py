@@ -1,4 +1,5 @@
 from TextClassification.models import LoadModel
+from TextClassification.utils.Metrics import metrics
 import numpy as np
 import torch
 import torch.nn as nn
@@ -30,9 +31,14 @@ def Run(config,writer):
     if config.resume is not None:
         start_iter = config.start_iter
     i = start_iter
+    train_epoch_metrics = metrics()
+    train_batch_metrics = metrics()
+    val_metrics = metrics()
     while i <= config.TrainIterAll :
+        train_epoch_metrics.reset()
         for TrainBatch in TrainIter:
             net.train()
+            i += 1
             # load data
             input, label = get_input_label(TrainBatch,config,device)
             # forward backward optimizer
@@ -41,19 +47,29 @@ def Run(config,writer):
             loss = criterion(output,label)
             loss.backward()
             optimizer.step()
-            # TODO metrics
+            pred = torch.max(output,1)[1].cpu().numpy().tolist()
+            label = label.cpu().numpy().tolist()
+            loss = [loss.tolist()]
+            train_epoch_metrics.update(pred,label,loss)
             # TODO tensorboard
-            print(loss.item())
+            # print(loss.item())
 
             if (i+1) % config.ValInter == 0 :
                 net.eval()
+                val_metrics.reset()
                 with torch.no_grad():
                     for ValBatch in tqdm(ValIter):
                         input, label = get_input_label(ValBatch,config,device)
                         output = net(input)
-                        loss = criterion(output)
-                        # TODO metrics
+                        loss = criterion(output,label)
+                        pred = torch.max(output,1)[1].cpu().numpy().tolist()
+                        label = label.cpu().numpy().tolist()
+                        loss = [loss.tolist()]
+                        val_metrics.update(pred,label,loss)
                         # TODO tensorboard
+                print(val_metrics.GetAvgAccuracy())
+                print(val_metrics.GetAvgF1())
+                print(val_metrics.GetAvgLoss())
 
 
 def get_input_label(Batch,config,device):

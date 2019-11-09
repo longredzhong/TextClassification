@@ -2,10 +2,11 @@ import io
 import os
 import time
 
+import torch
 from torchtext.data import BucketIterator, Dataset, Example, Field
 from torchtext.utils import unicode_csv_reader
 from torchtext.vocab import Vectors
-import torch
+
 from config.BaseConfig import BaseConfig
 
 
@@ -61,8 +62,8 @@ def ECommerceLoader(config):
     # add config
     config.CharVocabSize = len(char_text.vocab)
     config.WordVocabSize = len(word_text.vocab)
-    config.CharVectors = torch.tensor(char_text.vocab.vectors,requires_grad=True)
-    config.WordVectors = torch.tensor(word_text.vocab.vectors,requires_grad=True)
+    config.CharVectors = char_text.vocab.vectors
+    config.WordVectors = word_text.vocab.vectors
     # iter 
     train_iter = BucketIterator(
             train=True,

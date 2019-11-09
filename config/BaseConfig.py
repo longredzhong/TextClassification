@@ -21,12 +21,12 @@ class BaseConfig():
     UseLabel = "last"
     UseInput = "word"
     learning_rate = 0.0001
-    TrainBatchSize = 4
-    ValBatchSize = 1
+    TrainBatchSize = 512
+    ValBatchSize = 512
     DeviceIds = [1]
     resume = None
     start_iter = 0
-    TrainIterAll = 10000
+    TrainIterAll = 1000
     ValInter = 500
 if __name__ == "__main__":
     b = BaseConfig()
