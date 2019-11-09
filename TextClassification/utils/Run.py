@@ -5,6 +5,7 @@ import torch
 import torch.nn as nn
 from TextClassification.dataloader import GetLoader
 from tqdm import tqdm
+import os
 def Run(config,writer):
     # set constant
     torch.manual_seed(7777)
@@ -17,26 +18,27 @@ def Run(config,writer):
     # set model
     net = LoadModel(config.ModelName)
     net = net(config)
-    # set DataParallel
-    # DeviceIdList = config.DeviceIds
-    # net = torch.nn.DataParallel(net,device_ids=DeviceIdList)
     net = net.to(device)
     # set optimzier
     optimizer = torch.optim.Adam(net.parameters(), lr=config.learning_rate)
     # set scheduler
-    scheduler = torch.optim.lr_scheduler.ReduceLROnPlateau(optimizer)
+    scheduler = torch.optim.lr_scheduler.ReduceLROnPlateau(optimizer,'max',factor=0.5,patience=4,verbose=True)
     # set loss
     criterion = nn.CrossEntropyLoss()
     start_iter = 0
+    epoch = 1
+    best_acc = -100
     if config.resume is not None:
         start_iter = config.start_iter
+        epoch = config.epoch_end
     i = start_iter
     train_epoch_metrics = metrics()
     train_batch_metrics = metrics()
     val_metrics = metrics()
     while i <= config.TrainIterAll :
         train_epoch_metrics.reset()
-        for TrainBatch in TrainIter:
+        for epoch_iter,TrainBatch in enumerate(TrainIter,epoch):
+            train_batch_metrics.reset()
             net.train()
             i += 1
             # load data
@@ -51,9 +53,9 @@ def Run(config,writer):
             label = label.cpu().numpy().tolist()
             loss = [loss.tolist()]
             train_epoch_metrics.update(pred,label,loss)
-            # TODO tensorboard
-            # print(loss.item())
-
+            train_batch_metrics.update(pred,label,loss)
+            writer.add_scalar('Loss/train',train_batch_metrics.GetAvgLoss(),i)
+            writer.add_scalar('Acc/train',train_batch_metrics.GetAvgAccuracy(),i)
             if (i+1) % config.ValInter == 0 :
                 net.eval()
                 val_metrics.reset()
@@ -66,10 +68,25 @@ def Run(config,writer):
                         label = label.cpu().numpy().tolist()
                         loss = [loss.tolist()]
                         val_metrics.update(pred,label,loss)
-                        # TODO tensorboard
-                print(val_metrics.GetAvgAccuracy())
-                print(val_metrics.GetAvgF1())
-                print(val_metrics.GetAvgLoss())
+                # val tensorboard
+                writer.add_scalar('Loss/val',val_metrics.GetAvgLoss(),epoch_iter)
+                writer.add_scalar('Acc/val',val_metrics.GetAvgAccuracy(),epoch_iter)
+                writer.add_scalar('F1/val',val_metrics.GetAvgF1(),epoch_iter)
+                writer.add_scalar('Recall/val',val_metrics.GetAvgRecall(),epoch_iter)
+                writer.add_scalar('Precision/val',val_metrics.GetAvgPrecision(),epoch_iter)
+                scheduler.step(val_metrics.GetAvgAccuracy())
+                if val_metrics.GetAvgAccuracy() > best_acc :
+                    best_acc = val_metrics.GetAvgAccuracy()
+                    torch.save(net,os.path.join(config.LogPath,config.ModelName))
+                    config.resume = os.path.join(config.LogPath,config.ModelName)
+                    config.start_iter = i
+                    config.epoch_end = epoch_iter
+            # epoch tensorboard
+            writer.add_scalar('Loss/val',train_epoch_metrics.GetAvgLoss(),epoch_iter)
+            writer.add_scalar('Acc/val',train_epoch_metrics.GetAvgAccuracy(),epoch_iter)
+            writer.add_scalar('F1/val',train_epoch_metrics.GetAvgF1(),epoch_iter)
+            writer.add_scalar('Recall/val',train_epoch_metrics.GetAvgRecall(),epoch_iter)
+            writer.add_scalar('Precision/val',train_epoch_metrics.GetAvgPrecision(),epoch_iter)
 
 
 def get_input_label(Batch,config,device):
