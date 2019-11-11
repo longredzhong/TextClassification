@@ -1,5 +1,5 @@
 class BaseConfig():
-    ModelName = "CharTCN_NonLocal"
+    ModelName = "WordBiTCN"
     TrainPath = "/home/longred/TextClassification/dataset/preProcess/E_commerce_data/train_data.tsv"
     ValPath = "/home/longred/TextClassification/dataset/preProcess/E_commerce_data/val_data.tsv"
     DatasetName = "ECommerce"
@@ -19,14 +19,14 @@ class BaseConfig():
         "first":[242, 1550, 15817, 9805, 56486, 21698, 1074, 1248, 7178, 1238, 25728, 57869, 314, 8565, 24220, 21822, 16601, 2615, 2396, 24788, 30971, 15943]
     }
     UseLabel = "last"
-    UseInput = "char"
+    UseInput = "word"
     learning_rate = 0.001
     TrainBatchSize = 64
     ValBatchSize = 512
     DeviceIds = [1]
     resume = None
     start_iter = 0
-    TrainIterAll = 70000
+    TrainIterAll = 100000
     ValInter = 1000
 if __name__ == "__main__":
     b = BaseConfig()

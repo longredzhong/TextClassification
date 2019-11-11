@@ -6,7 +6,9 @@ import torch.nn as nn
 from TextClassification.dataloader import GetLoader
 from tqdm import tqdm
 import os
-def Run(config,writer):
+
+
+def Run(config, writer):
     # set constant
     torch.manual_seed(7777)
     torch.cuda.manual_seed_all(7777)
@@ -22,7 +24,8 @@ def Run(config,writer):
     # set optimzier
     optimizer = torch.optim.Adam(net.parameters(), lr=config.learning_rate)
     # set scheduler
-    scheduler = torch.optim.lr_scheduler.ReduceLROnPlateau(optimizer,'max',factor=0.1,patience=3,verbose=True)
+    scheduler = torch.optim.lr_scheduler.ReduceLROnPlateau(
+        optimizer, 'max', factor=0.1, patience=3, verbose=True)
     # set loss
     criterion = nn.CrossEntropyLoss()
     start_iter = 1
@@ -35,72 +38,83 @@ def Run(config,writer):
     train_epoch_metrics = metrics()
     train_batch_metrics = metrics()
     val_metrics = metrics()
-    while i <= config.TrainIterAll :
+    while i <= config.TrainIterAll:
         train_epoch_metrics.reset()
         for TrainBatch in TrainIter:
             net.train()
             i += 1
             # load data
-            input, label = get_input_label(TrainBatch,config,device)
+            input, label = get_input_label(TrainBatch, config, device)
             # forward backward optimizer
             optimizer.zero_grad()
             output = net(input)
-            loss = criterion(output,label)
+            loss = criterion(output, label)
             loss.backward()
             optimizer.step()
-            pred = torch.max(output,1)[1].cpu().numpy().tolist()
+            pred = torch.max(output, 1)[1].cpu().numpy().tolist()
             label = label.cpu().numpy().tolist()
             loss = [loss.tolist()]
-            train_epoch_metrics.update(pred,label,loss)
-            train_batch_metrics.update(pred,label,loss)
+            train_epoch_metrics.update(pred, label, loss)
+            train_batch_metrics.update(pred, label, loss)
             if i % 100 == 0:
-                writer.add_scalar('Loss/train',train_batch_metrics.GetAvgLoss(),i)
-                writer.add_scalar('Acc/train',train_batch_metrics.GetAvgAccuracy(),i)
+                writer.add_scalar(
+                    'Loss/train', train_batch_metrics.GetAvgLoss(), i)
+                writer.add_scalar(
+                    'Acc/train', train_batch_metrics.GetAvgAccuracy(), i)
                 train_batch_metrics.reset()
-            if i % 100 ==0:
-                print("train iter",i)
-            if i % config.ValInter == 0 :
+            if i % 100 == 0:
+                print("train iter", i)
+            if i % config.ValInter == 0:
                 net.eval()
                 val_metrics.reset()
                 with torch.no_grad():
                     for ValBatch in tqdm(ValIter):
-                        input, label = get_input_label(ValBatch,config,device)
+                        input, label = get_input_label(
+                            ValBatch, config, device)
                         output = net(input)
-                        loss = criterion(output,label)
-                        pred = torch.max(output,1)[1].cpu().numpy().tolist()
+                        loss = criterion(output, label)
+                        pred = torch.max(output, 1)[1].cpu().numpy().tolist()
                         label = label.cpu().numpy().tolist()
                         loss = [loss.tolist()]
-                        val_metrics.update(pred,label,loss)
+                        val_metrics.update(pred, label, loss)
                 # val tensorboard
-                writer.add_scalar('Loss/val',val_metrics.GetAvgLoss(),i)
-                writer.add_scalar('Acc/val',val_metrics.GetAvgAccuracy(),i)
-                writer.add_scalar('F1/val',val_metrics.GetAvgF1(),i)
-                writer.add_scalar('Recall/val',val_metrics.GetAvgRecall(),i)
-                writer.add_scalar('Precision/val',val_metrics.GetAvgPrecision(),i)
+                writer.add_scalar('Loss/val', val_metrics.GetAvgLoss(), i)
+                writer.add_scalar('Acc/val', val_metrics.GetAvgAccuracy(), i)
+                writer.add_scalar('F1/val', val_metrics.GetAvgF1(), i)
+                writer.add_scalar('Recall/val', val_metrics.GetAvgRecall(), i)
+                writer.add_scalar(
+                    'Precision/val', val_metrics.GetAvgPrecision(), i)
                 scheduler.step(val_metrics.GetAvgAccuracy())
-                if val_metrics.GetAvgAccuracy() > best_acc :
+                if val_metrics.GetAvgAccuracy() > best_acc:
                     best_acc = val_metrics.GetAvgAccuracy()
-                    torch.save(net,os.path.join(config.LogPath,config.ModelName))
-                    config.resume = os.path.join(config.LogPath,config.ModelName)
+                    torch.save(net, os.path.join(
+                        config.LogPath, config.ModelName))
+                    config.resume = os.path.join(
+                        config.LogPath, config.ModelName)
                     config.start_iter = i
                     config.epoch_end = epoch
         # epoch tensorboard
-        writer.add_scalar('Loss/epoch',train_epoch_metrics.GetAvgLoss(),epoch)
-        writer.add_scalar('Acc/epoch',train_epoch_metrics.GetAvgAccuracy(),epoch)
-        writer.add_scalar('F1/epoch',train_epoch_metrics.GetAvgF1(),epoch)
-        writer.add_scalar('Recall/epoch',train_epoch_metrics.GetAvgRecall(),epoch)
-        writer.add_scalar('Precision/epoch',train_epoch_metrics.GetAvgPrecision(),epoch)
+        writer.add_scalar(
+            'Loss/epoch', train_epoch_metrics.GetAvgLoss(), epoch)
+        writer.add_scalar(
+            'Acc/epoch', train_epoch_metrics.GetAvgAccuracy(), epoch)
+        writer.add_scalar('F1/epoch', train_epoch_metrics.GetAvgF1(), epoch)
+        writer.add_scalar(
+            'Recall/epoch', train_epoch_metrics.GetAvgRecall(), epoch)
+        writer.add_scalar('Precision/epoch',
+                          train_epoch_metrics.GetAvgPrecision(), epoch)
         epoch += 1
 
-def get_input_label(Batch,config,device):
-    char,word = Batch.char_text.to(device), Batch.word_text.to(device)
+
+def get_input_label(Batch, config, device):
+    char, word = Batch.char_text.to(device), Batch.word_text.to(device)
     if config.UseInput == "word":
         input = word
     elif config.UseInput == "char":
         input = char
     elif config.UseInput == "all":
-        input = [char,word]
-    
+        input = [char, word]
+
     if config.UseLabel == "last":
         label = Batch.label_last.to(device)
     elif config.UseLabel == "middle":
