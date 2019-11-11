@@ -1,21 +1,22 @@
 import torch
 import torch.nn as nn
 import torch.nn.functional as F
-from TextClassification.models.lib.TemporalConvNet import TemporalConvNet
 from TextClassification.models.lib.non_local_gaussian import NONLocalBlock1D
+from TextClassification.models.lib.TemporalConvNet import TemporalConvNet
 
 
-class WordTCN_NonLocal(nn.Module):
+
+class CharTCN_NonLocal(nn.Module):
     def __init__(self, config):
-        super(WordTCN_NonLocal, self).__init__()
-        self.WordEmbedding = nn.Embedding(config.WordVocabSize,
-                                          config.WordVectorsDim)
-        if config.WordVectors is not None:
-            self.WordEmbedding.weight.data.copy_(config.WordVectors)
-        self.num_channels_word = [300, 300, 300, 300]
+        super(CharTCN_NonLocal, self).__init__()
+        self.CharEmbedding = nn.Embedding(config.CharVocabSize,
+                                          config.CharVectorsDim)
+        if config.CharVectors is not None:
+            self.CharEmbedding.weight.data.copy_(config.CharVectors)
+        self.num_channels_Char = [300, 300, 300, 300]
         self.label_size = config.Label[config.UseLabel]
-        self.TCN_word = TemporalConvNet(
-            num_inputs=300, num_channels=self.num_channels_word, kernel_size=2, dropout=0.2)
+        self.TCN_Char = TemporalConvNet(
+            num_inputs=300, num_channels=self.num_channels_Char, kernel_size=2, dropout=0.2)
         self.fc = nn.Sequential(
             nn.Linear(300, 1024),
             nn.BatchNorm1d(1024),
@@ -26,10 +27,10 @@ class WordTCN_NonLocal(nn.Module):
         self.NONLocal = NONLocalBlock1D(300, 100, True, True)
 
     def forward(self, input):
-        x = self.WordEmbedding(input)
+        x = self.CharEmbedding(input)
         x = x.permute(1, 2, 0)
         x = self.NONLocal(x)
-        x = self.TCN_word(x)
+        x = self.TCN_Char(x)
         x = torch.mean(x, dim=2)
         x = x.view(x.size(0), -1)
         x = self.fc(x)

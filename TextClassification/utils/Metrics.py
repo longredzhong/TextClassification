@@ -16,11 +16,11 @@ class metrics(object):
     def GetAvgAccuracy(self):
         return accuracy_score(self.label,self.pred)
     def GetAvgPrecision(self):
-        return precision_score(self.label,self.pred,average="micro")
+        return precision_score(self.label,self.pred,average="macro")
     def GetAvgRecall(self):
-        return recall_score(self.label,self.pred,average="micro")
+        return recall_score(self.label,self.pred,average="macro")
     def GetAvgF1(self):
-        return f1_score(self.label,self.pred,average="micro")
+        return f1_score(self.label,self.pred,average="macro")
     def reset(self):
         self.pred = []
         self.label = []
