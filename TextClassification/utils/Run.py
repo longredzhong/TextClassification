@@ -13,7 +13,7 @@ def Run(config, writer):
     torch.manual_seed(7777)
     torch.cuda.manual_seed_all(7777)
     np.random.seed(7777)
-    device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
+    device = torch.device('cuda:1' if torch.cuda.is_available() else 'cpu')
     # set Loader
     Loader = GetLoader(config.DatasetName)
     TrainIter, ValIter = Loader(config)
@@ -24,8 +24,9 @@ def Run(config, writer):
     # set optimzier
     optimizer = torch.optim.Adam(net.parameters(), lr=config.learning_rate)
     # set scheduler
-    scheduler = torch.optim.lr_scheduler.ReduceLROnPlateau(
-        optimizer, 'max', factor=0.1, patience=3, verbose=True)
+    # scheduler = torch.optim.lr_scheduler.ReduceLROnPlateau(
+    #     optimizer, 'max', factor=0.1, patience=3, verbose=True)
+    scheduler = torch.optim.lr_scheduler.CosineAnnealingLR(optimizer, 5)
     # set loss
     criterion = nn.CrossEntropyLoss()
     start_iter = 1
