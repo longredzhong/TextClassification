@@ -1,7 +1,7 @@
 import torch
 import torch.nn as nn
 import torch.nn.functional as F
-from TextClassification.models.lib.BiTemporalConvNet import BiTemporalConvNet
+from TextClassification.models.lib.BiTemporalConvNet_v2 import BiTemporalConvNet
 
 
 class WordBiTCN(nn.Module):
