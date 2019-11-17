@@ -1,5 +1,5 @@
 class BaseConfig():
-    ModelName = "WordBiTCN"
+    ModelName = "WordBiTCNCNN"
     TrainPath = "/home/longred/TextClassification/dataset/preProcess/E_commerce_data/train_data.tsv"
     ValPath = "/home/longred/TextClassification/dataset/preProcess/E_commerce_data/val_data.tsv"
     DatasetName = "ECommerce"
