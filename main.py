@@ -13,6 +13,4 @@ if __name__ == "__main__":
     write = SummaryWriter(log_dir=logdir)
     cp_file2log(logPath=logdir, ModelName=config.ModelName)
     Run(config, write)
-
-
 # %%
