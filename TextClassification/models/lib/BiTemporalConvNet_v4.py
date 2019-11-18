@@ -56,7 +56,7 @@ class BiTemporalBlock(nn.Module):
                                     1) if n_inputs != n_outputs else None
         self.relu = nn.ReLU()
         self.conv1x1 = weight_norm(
-            nn.Conv1d(n_outputs//2, n_outputs, 1,))
+            nn.Conv1d(n_outputs, n_outputs, 1,))
         self.init_weights()
 
     def init_weights(self):

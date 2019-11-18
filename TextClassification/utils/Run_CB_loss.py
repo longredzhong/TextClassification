@@ -6,7 +6,7 @@ import torch.nn as nn
 from TextClassification.dataloader import GetLoader
 from tqdm import tqdm
 import os
-
+from TextClassification.utils.class_blanced_loss import CB_loss
 
 def Run(config, writer):
     # set constant
@@ -28,7 +28,8 @@ def Run(config, writer):
         optimizer, 'max', factor=0.5, patience=3, verbose=True)
     # scheduler = torch.optim.lr_scheduler.CosineAnnealingLR(optimizer, 5)
     # set loss
-    criterion = nn.CrossEntropyLoss()
+    # criterion = nn.CrossEntropyLoss()
+    criterion = CB_loss
     start_iter = 1
     epoch = 1
     best_acc = -100
@@ -49,7 +50,7 @@ def Run(config, writer):
             # forward backward optimizer
             optimizer.zero_grad()
             output = net(input)
-            loss = criterion(output, label)
+            loss = criterion(label,output,config.SamplesPerCls["last"],config.Label["last"],"softmax",0.9,2.0)
             loss.backward()
             optimizer.step()
             pred = torch.max(output, 1)[1].cpu().numpy().tolist()
@@ -73,7 +74,7 @@ def Run(config, writer):
                         input, label = get_input_label(
                             ValBatch, config, device)
                         output = net(input)
-                        loss = criterion(output, label)
+                        loss = criterion(label,output,config.SamplesPerCls["last"],config.Label["last"],"softmax",0.9,2.0)
                         pred = torch.max(output, 1)[1].cpu().numpy().tolist()
                         label = label.cpu().numpy().tolist()
                         loss = [loss.tolist()]

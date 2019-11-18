@@ -4,7 +4,7 @@ import os
 import datetime
 from TextClassification.utils.cp_file2log import cp_file2log
 from torch.utils.tensorboard import SummaryWriter
-from TextClassification.utils.Run import Run
+from TextClassification.utils.Run_CB_loss import Run
 if __name__ == "__main__":
     config = BaseConfig()
     logdir = os.path.join("run_log", config.ModelName,
