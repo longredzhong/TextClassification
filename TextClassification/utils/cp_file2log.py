@@ -12,6 +12,6 @@ def cp_file2log(logPath, ModelName):
     ModelPathDst = os.path.join(logPath, ModelName+'.py')
     copyfile(ModelPathSrc, ModelPathDst)
     # cp config.py
-    configPathSrc = 'Config/BaseConfig.py'
+    configPathSrc = 'config/BaseConfig.py'
     configPathDst = os.path.join(logPath, 'BaseConfig.py')
     copyfile(configPathSrc, configPathDst)

@@ -13,7 +13,7 @@ def Run_CB_Loss(config, writer):
     torch.manual_seed(7777)
     torch.cuda.manual_seed_all(7777)
     np.random.seed(7777)
-    device = torch.device('cuda:1' if torch.cuda.is_available() else 'cpu')
+    device = torch.device('cuda:2' if torch.cuda.is_available() else 'cpu')
     # set Loader
     Loader = GetLoader(config.DatasetName)
     TrainIter, ValIter = Loader(config)
@@ -49,7 +49,7 @@ def Run_CB_Loss(config, writer):
             # forward backward optimizer
             optimizer.zero_grad()
             output = net(input)
-            loss = CB_loss(label,output,config.SamplesPerCls[config.UseLabel],config.Label[config.UseLabel],config.CBLossType,config.CBLossBeta,config.CBLossGamma)
+            loss = CB_loss(label,output,config.SamplesPerCls[config.UseLabel],config.Label[config.UseLabel],config.CBLossType,config.CBLossBeta,config.CBLossGamma,device)
             loss.backward()
             optimizer.step()
             pred = torch.max(output, 1)[1].cpu().numpy().tolist()
@@ -73,7 +73,7 @@ def Run_CB_Loss(config, writer):
                         input, label = get_input_label(
                             ValBatch, config, device)
                         output = net(input)
-                        loss = CB_loss(label,output,config.SamplesPerCls[config.UseLabel],config.Label[config.UseLabel],config.CBLossType,config.CBLossBeta,config.CBLossGamma)
+                        loss = CB_loss(label,output,config.SamplesPerCls[config.UseLabel],config.Label[config.UseLabel],config.CBLossType,config.CBLossBeta,config.CBLossGamma,device)
                         pred = torch.max(output, 1)[1].cpu().numpy().tolist()
                         label = label.cpu().numpy().tolist()
                         loss = [loss.tolist()]
