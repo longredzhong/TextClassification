@@ -11,6 +11,11 @@ class BaseConfig():
     WordVectorsDim = 300
     CharVocabSize = None
     WordVocabSize = None
+    UseLoss = "CrossEntropyLoss"
+    # UseLoss = "CBLoss"
+    # CBLossType = "softmax"
+    # CBLossBeta = 0.9
+    # CBLossGamma = 2.0
     LogPath = ""
     Label = {"last": 1258, "middle": 192, "first": 22}
     SamplesPerCls = {
@@ -30,4 +35,4 @@ class BaseConfig():
     ValInter = 1000
 if __name__ == "__main__":
     b = BaseConfig()
-    print(b)
+    print(b.Label[b.UseLabel])

@@ -11,7 +11,7 @@ def cp_file2log(logPath, ModelName):
         'TextClassification/models', ModelName+'.py')
     ModelPathDst = os.path.join(logPath, ModelName+'.py')
     copyfile(ModelPathSrc, ModelPathDst)
-    # cp run.py
-    RunPathSrc = 'TextClassification/utils/Run.py'
-    RunPathDst = os.path.join(logPath, 'Run.py')
-    copyfile(RunPathSrc, RunPathDst)
+    # cp config.py
+    configPathSrc = 'config/BaseConfig.py'
+    configPathDst = os.path.join(logPath, 'BaseConfig.py')
+    copyfile(configPathSrc, configPathDst)

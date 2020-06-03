@@ -6,14 +6,25 @@ import torch.nn as nn
 from TextClassification.dataloader import GetLoader
 from tqdm import tqdm
 import os
+<<<<<<< HEAD
 from TextClassification.utils.class_blanced_loss import CB_loss
 
 def Run(config, writer):
+=======
+from TextClassification.utils.class_balanced_loss import CB_loss
+
+def Run_CB_Loss(config, writer):
+>>>>>>> 6df15067529deb85bda6e29cf1bb29d657c8f971
     # set constant
     torch.manual_seed(7777)
     torch.cuda.manual_seed_all(7777)
     np.random.seed(7777)
+<<<<<<< HEAD
     device = torch.device('cuda:0' if torch.cuda.is_available() else 'cpu')
+=======
+    cuda_id = 'cuda:'+str(config.DeviceIds[0])
+    device = torch.device(cuda_id if torch.cuda.is_available() else 'cpu')
+>>>>>>> 6df15067529deb85bda6e29cf1bb29d657c8f971
     # set Loader
     Loader = GetLoader(config.DatasetName)
     TrainIter, ValIter = Loader(config)
@@ -25,11 +36,18 @@ def Run(config, writer):
     optimizer = torch.optim.Adam(net.parameters(), lr=config.learning_rate)
     # set scheduler
     scheduler = torch.optim.lr_scheduler.ReduceLROnPlateau(
+<<<<<<< HEAD
         optimizer, 'max', factor=0.5, patience=3, verbose=True)
     # scheduler = torch.optim.lr_scheduler.CosineAnnealingLR(optimizer, 5)
     # set loss
     # criterion = nn.CrossEntropyLoss()
     criterion = CB_loss
+=======
+        optimizer, 'max', factor=0.5, patience=4, verbose=True)
+    # scheduler = torch.optim.lr_scheduler.CosineAnnealingLR(optimizer, 5)
+    # set loss
+    # criterion = nn.CrossEntropyLoss()
+>>>>>>> 6df15067529deb85bda6e29cf1bb29d657c8f971
     start_iter = 1
     epoch = 1
     best_acc = -100
@@ -50,7 +68,11 @@ def Run(config, writer):
             # forward backward optimizer
             optimizer.zero_grad()
             output = net(input)
+<<<<<<< HEAD
             loss = criterion(label,output,config.SamplesPerCls["last"],config.Label["last"],"softmax",0.9,2.0)
+=======
+            loss = CB_loss(label,output,config.SamplesPerCls[config.UseLabel],config.Label[config.UseLabel],config.CBLossType,config.CBLossBeta,config.CBLossGamma,device)
+>>>>>>> 6df15067529deb85bda6e29cf1bb29d657c8f971
             loss.backward()
             optimizer.step()
             pred = torch.max(output, 1)[1].cpu().numpy().tolist()
@@ -74,7 +96,11 @@ def Run(config, writer):
                         input, label = get_input_label(
                             ValBatch, config, device)
                         output = net(input)
+<<<<<<< HEAD
                         loss = criterion(label,output,config.SamplesPerCls["last"],config.Label["last"],"softmax",0.9,2.0)
+=======
+                        loss = CB_loss(label,output,config.SamplesPerCls[config.UseLabel],config.Label[config.UseLabel],config.CBLossType,config.CBLossBeta,config.CBLossGamma,device)
+>>>>>>> 6df15067529deb85bda6e29cf1bb29d657c8f971
                         pred = torch.max(output, 1)[1].cpu().numpy().tolist()
                         label = label.cpu().numpy().tolist()
                         loss = [loss.tolist()]

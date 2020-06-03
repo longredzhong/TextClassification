@@ -1,7 +1,7 @@
 import torch
 import torch.nn as nn
 import torch.nn.functional as F
-from TextClassification.models.lib.BiTemporalConvNet import BiTemporalConvNet
+from TextClassification.models.lib.BiTemporalConvNet_v1 import BiTemporalConvNet
 
 
 class CharBiTCN(nn.Module):

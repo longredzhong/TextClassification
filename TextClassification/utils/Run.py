@@ -13,7 +13,12 @@ def Run(config, writer):
     torch.manual_seed(7777)
     torch.cuda.manual_seed_all(7777)
     np.random.seed(7777)
+<<<<<<< HEAD
     device = torch.device('cuda:0' if torch.cuda.is_available() else 'cpu')
+=======
+    cuda_id = 'cuda:'+str(config.DeviceIds[0])
+    device = torch.device(cuda_id if torch.cuda.is_available() else 'cpu')
+>>>>>>> 6df15067529deb85bda6e29cf1bb29d657c8f971
     # set Loader
     Loader = GetLoader(config.DatasetName)
     TrainIter, ValIter = Loader(config)
