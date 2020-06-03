@@ -26,7 +26,7 @@ def Run(config, writer):
     optimizer = torch.optim.Adam(net.parameters(), lr=config.learning_rate)
     # set scheduler
     scheduler = torch.optim.lr_scheduler.ReduceLROnPlateau(
-        optimizer, 'max', factor=0.5, patience=4, verbose=True)
+        optimizer, 'max', factor=0.5, patience=3, verbose=True)
     # scheduler = torch.optim.lr_scheduler.CosineAnnealingLR(optimizer, 5)
     # set loss
     criterion = nn.CrossEntropyLoss()
