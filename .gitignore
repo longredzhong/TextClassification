@@ -4,6 +4,7 @@ dataset/
 .vector_cache
 .ipynb_checkpoints
 run_log
+run_log_middle
 # Byte-compiled / optimized / DLL files
 __pycache__/
 *.py[cod]
