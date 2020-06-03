@@ -45,30 +45,14 @@ class TCN_MCNN(nn.Module):
                           kernel_size=kernel_size),
                 nn.BatchNorm1d(256),
                 nn.ReLU6(inplace=True),
-                nn.AdaptiveMaxPool1d(3)
+                nn.AdaptiveMaxPool1d(1)
             )
             for kernel_size in [1, 2, 3, 4, 5]
         ]
-        convs2 = [
-            nn.Sequential(
-                nn.Conv1d(in_channels=300,
-                          out_channels=256,
-                          kernel_size=kernel_size),
-                nn.BatchNorm1d(256),
-                nn.ReLU6(inplace=True),
-                nn.Conv1d(in_channels=256,
-                          out_channels=256,
-                          kernel_size=kernel_size),
-                nn.BatchNorm1d(256),
-                nn.ReLU6(inplace=True),
-                nn.AdaptiveMaxPool1d(3)
-            )
-            for kernel_size in [3, 4, 5, 6, 7]
-        ]
         self.convs1 = nn.ModuleList(convs1)
-        self.convs2 = nn.ModuleList(convs2)
         self.fc = nn.Sequential(
-            nn.Linear(256*10*3, 2048),
+            nn.Linear(256*10, 2048),
+            nn.Dropout(0.2),
             nn.BatchNorm1d(2048),
             nn.ReLU6(inplace=True),
             nn.Linear(2048, self.label_size)
