@@ -44,10 +44,10 @@ class CharCNN(nn.Module):
             nn.MaxPool1d(kernel_size=3, stride=3)
         )
 
-        self.pool = nn.AdaptiveAvgPool1d(2048)
+
 
         self.fc1 = nn.Sequential(
-            nn.Linear(2048, 2048),
+            nn.Linear(3328, 2048),
             nn.ReLU(),
             nn.Dropout(p=0.5)
         )
@@ -59,7 +59,7 @@ class CharCNN(nn.Module):
         )
 
         self.fc3 = nn.Linear(2048, self.label_size)
-        # self.log_softmax = nn.LogSoftmax()
+
 
     def forward(self, x):
         x = self.CharEmbedding(x).permute(1, 2, 0)
@@ -72,8 +72,7 @@ class CharCNN(nn.Module):
 
         # collapse
         x = x.view(x.size(0), -1)
-        x = self.pool(x)
-        # print(x.size())
+
         # linear layer
         x = self.fc1(x)
         # linear layer
