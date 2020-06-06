@@ -1,7 +1,7 @@
 import torch
 import torch.nn as nn
 import torch.nn.functional as F
-from TextClassification.models.lib.BiTemporalConvNet_v1 import BiTemporalConvNet
+from TextClassification.models.lib.BiTemporalConvNet_v5 import BiTemporalConvNet
 
 
 class WordBiTCN(nn.Module):
@@ -18,7 +18,7 @@ class WordBiTCN(nn.Module):
         self.fc = nn.Sequential(
             nn.Linear(300, 1024),
             nn.BatchNorm1d(1024),
-            nn.Dropout(0.5),
+            nn.Dropout(0.2),
             nn.ReLU(),
             nn.Linear(1024, self.label_size)
         )
