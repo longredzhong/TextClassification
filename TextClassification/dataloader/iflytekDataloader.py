@@ -3,7 +3,8 @@ import json
 import torch
 from torch.utils.data import  Dataset,DataLoader
 from torch.utils.data import dataset
-
+import os
+from TextClassification.utils.util import toTensor,sequence_padding
 
 class iflytekDataset(Dataset):
     def __init__(self,raw_path,tokenizer) -> None:
@@ -37,31 +38,18 @@ class iflytekDataset(Dataset):
             self.sentence.append(tmp['sentence'])
             self.label.append(int(tmp['label']))
 
-
-#%%
-import sys
-import os
-sys.path.append(
-    (os.path.abspath(os.path.join(os.path.dirname(__file__), '../../'))))
-raw_path = r"C:\Users\LongRed\code\TextClassification\dataset\iflytek\train.json"
-from TextClassification.utils.tokenizers import Tokenizer
-from TextClassification.utils.util import sequence_padding
-from TextClassification.utils.util import toTensor
-#%%
-token = Tokenizer(r"C:\Users\LongRed\code\TextClassification\dataset\albert_tiny_489k\vocab.txt")
-# %%
-dataset = iflytekDataset(raw_path,token)
-
-# %%
-dataset.__getitem__(9)
-# %%
 def collate_pad(batch):
     text,label = zip(*batch)
     text = sequence_padding(text)
     label = toTensor(label)
     return (text,label)
-# %%
-dataloader = DataLoader(dataset,batch_size=2,shuffle=True,collate_fn=collate_pad)
-# %%
-next(iter(dataloader))
-# %%
+
+def get_dataloader(raw_path,tokenizer,batch_size=32):
+    train_path = os.path.join(raw_path,'train.json')
+    dev_path = os.path.join(raw_path,'dev.json')
+    test_path = os.path.join(raw_path,'test.json')
+    train_dataset = iflytekDataset(train_path,tokenizer)
+    dev_dataset = iflytekDataset(dev_path,tokenizer)
+    train_dataloader =  DataLoader(train_dataset,batch_size=batch_size,shuffle=True,collate_fn=collate_pad)
+    dev_dataloader =  DataLoader(dev_dataset,batch_size=batch_size,shuffle=True,collate_fn=collate_pad)
+    return train_dataloader,dev_dataloader
