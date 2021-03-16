@@ -8,5 +8,7 @@ from TextClassification.utils.tokenizers import Tokenizer
 #%%
 token = Tokenizer(r"C:\Users\LongRed\code\TextClassification\dataset\albert_tiny_489k\vocab.txt")
 # %%
-token._tokenize("的方式发顺丰apple")
+t= token._tokenize("的沙发沙发沙发all")
+# %%
+
 # %%
