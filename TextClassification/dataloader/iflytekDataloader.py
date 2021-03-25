@@ -33,10 +33,13 @@ class iflytekDataset(Dataset):
     def load_data(self,raw_path):
         with open(raw_path,mode='r',encoding="UTF8") as f:
             texts = f.readlines()
+        target = []
         for tmp in texts:
             tmp = json.loads(tmp)
             self.sentence.append(tmp['sentence'])
-            self.label.append(int(tmp['label']))
+            target.append(tmp['label'])
+        target2id = {label: indx for indx, label in enumerate(set(target))}
+        self.label = [target2id[label] for label in target]
 
 def collate_pad(batch):
     text,label = zip(*batch)
