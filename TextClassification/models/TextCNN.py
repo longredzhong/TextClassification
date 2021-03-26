@@ -3,14 +3,14 @@ import torch.nn as nn
 import torch.nn.functional as F
 
 class TextCNN(nn.Module):
-    def __init__(self, config):
+    def __init__(self, embedding_path,num_classes):
         super(TextCNN, self).__init__()
-        self.WordEmbedding = torch.load(config.embedding_path)
+        self.WordEmbedding = torch.load(embedding_path)
         WordVectorsDim = self.WordEmbedding.embedding_dim
         self.convs = nn.ModuleList(
             [nn.Conv2d(1, 256, (k, WordVectorsDim)) for k in [2,3,4]])
-        self.dropout = nn.Dropout(config.dropout)
-        self.fc = nn.Linear(256 * len([2,3,4]), config.num_classes)
+        self.dropout = nn.Dropout(0.5)
+        self.fc = nn.Linear(256 * len([2,3,4]), num_classes)
 
     def conv_and_pool(self, x, conv):
         x = F.relu(conv(x)).squeeze(3)

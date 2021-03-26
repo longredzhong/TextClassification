@@ -51,7 +51,8 @@ def get_dataloader(raw_path,tokenizer,batch_size=32):
     dev_path = os.path.join(raw_path,'dev.json')
     # test_path = os.path.join(raw_path,'test.json')
     train_dataset = tnewsDataset(train_path,tokenizer)
+    num_classes = train_dataset.n_class
     dev_dataset = tnewsDataset(dev_path,tokenizer)
     train_dataloader =  DataLoader(train_dataset,batch_size=batch_size,shuffle=True,collate_fn=collate_pad)
     dev_dataloader =  DataLoader(dev_dataset,batch_size=batch_size,shuffle=True,collate_fn=collate_pad)
-    return train_dataloader,dev_dataloader
+    return train_dataloader,dev_dataloader,num_classes
