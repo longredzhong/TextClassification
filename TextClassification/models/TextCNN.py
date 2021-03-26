@@ -9,10 +9,10 @@ class TextCNN(nn.Module):
         self.conv3 = nn.Conv1d(WordVectorsDim, 256, 3)
         self.conv4 = nn.Conv1d(WordVectorsDim, 256, 4)
         self.conv5 = nn.Conv1d(WordVectorsDim, 256, 5)
-        self.Max3_pool = nn.AdaptiveMaxPool1d(1)
-        self.Max4_pool = nn.AdaptiveMaxPool1d(1)
-        self.Max5_pool = nn.AdaptiveMaxPool1d(1)
-
+        # self.Max3_pool = nn.AdaptiveMaxPool1d(1)
+        # self.Max4_pool = nn.AdaptiveMaxPool1d(1)
+        # self.Max5_pool = nn.AdaptiveMaxPool1d(1)
+        self.avg_pool =nn.AdaptiveAvgPool1d(1)
         self.label_size = config.label_size
 
         self.fc = nn.Linear(256*3, self.label_size)
@@ -27,13 +27,15 @@ class TextCNN(nn.Module):
         x3 = F.relu(self.conv5(x))
 
         # Pooling
-        x1 = self.Max3_pool(x1)
-        x2 = self.Max4_pool(x2)
-        x3 = self.Max5_pool(x3)
-
+        # x1 = self.Max3_pool(x1)
+        # x2 = self.Max4_pool(x2)
+        # x3 = self.Max5_pool(x3)
+        x1 = self.avg_pool(x1)
+        x2 = self.avg_pool(x2)
+        x3 = self.avg_pool(x3)
         # capture and concatenate the features
         x = torch.cat((x1, x2, x3), 1)
-        x = x.view(x.size(0), -1)
-
+        x = x.view(-1,x.size(1))
+        
         x = self.fc(x)
         return x
