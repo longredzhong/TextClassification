@@ -6,8 +6,8 @@ from TextClassification.utils.tokenizers import Tokenizer
 from TextClassification.trainer import TextTrainer
 from TextClassification.dataloader.tnewsDataloader import get_dataloader, tnewsDataset
 tokenizer = Tokenizer(
-    r"C:\Users\LongRed\code\TextClassification\dataset\albert_tiny_zh\vocab.txt")
-dataset_path = r"C:\Users\LongRed\code\TextClassification\dataset\tnews_public"
+    r"/home/longred/code/TextClassification/dataset/albert_tiny_zh/vocab.txt")
+dataset_path = r"/home/longred/code/TextClassification/dataset/tnews_public"
 train_dataloader, dev_dataloader = get_dataloader(dataset_path,tokenizer)
 #%%
 #%%

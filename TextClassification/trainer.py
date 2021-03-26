@@ -1,7 +1,8 @@
 import torch
 import numpy as np
 from TextClassification.utils.util import accuracy,macro_f1
-
+import fitlog
+fitlog.set_log_dir("logs/") 
 class TextTrainer:
     def __init__(self, optimizer, seed=777, max_epoch=1000):
         self.max_epoch = max_epoch
@@ -61,5 +62,9 @@ class TextTrainer:
     def fit(self, model, train_dataloader,dev_dataloader):
         for i in range(self.max_epoch):
             train_loss,train_acc = self.train(model,train_dataloader)
+            fitlog.add_loss(train_loss,name="Train Loss",step=i+1)
+            fitlog.add_metric({"train":{"Acc":train_acc}}, step=i+1)
             dev_loss, acc, f1, precision, recall = self.dev(model,dev_dataloader)
+            fitlog.add_loss(dev_loss,name="Dev Loss",step=i+1)
+            fitlog.add_metric({"Dev":{"Acc":acc,"precision":precision,"recall":recall,"F1":f1}}, step=i+1)
             print(train_acc,acc)

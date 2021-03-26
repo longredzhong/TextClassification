@@ -4,11 +4,11 @@ import torch.nn.functional as F
 class TextCNN(nn.Module):
     def __init__(self,config):
         super(TextCNN,self).__init__()
-        self.WordEmbedding = torch.load(r"C:\Users\LongRed\code\TextClassification\dataset\albert_tiny_zh\embedding.pt")
-
-        self.conv3 = nn.Conv1d(config.WordVectorsDim, 256, 3)
-        self.conv4 = nn.Conv1d(config.WordVectorsDim, 256, 4)
-        self.conv5 = nn.Conv1d(config.WordVectorsDim, 256, 5)
+        self.WordEmbedding = torch.load(config.embedding_path)
+        WordVectorsDim = self.WordEmbedding.embedding_dim
+        self.conv3 = nn.Conv1d(WordVectorsDim, 256, 3)
+        self.conv4 = nn.Conv1d(WordVectorsDim, 256, 4)
+        self.conv5 = nn.Conv1d(WordVectorsDim, 256, 5)
         self.Max3_pool = nn.AdaptiveMaxPool1d(1)
         self.Max4_pool = nn.AdaptiveMaxPool1d(1)
         self.Max5_pool = nn.AdaptiveMaxPool1d(1)
