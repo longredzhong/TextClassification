@@ -141,7 +141,8 @@ class TokenizerBase(object):
             first_token_ids.extend(second_token_ids)
             first_segment_ids.extend(second_segment_ids)
 
-        return first_token_ids, first_segment_ids
+        # return first_token_ids, first_segment_ids
+        return first_token_ids
 
     def id_to_token(self, i):
         """id序列为对应的token

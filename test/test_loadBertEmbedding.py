@@ -19,17 +19,16 @@ net = AlbertModel.from_pretrained( r"C:\Users\LongRed\code\TextClassification\da
 # %%
 embedding = net.get_input_embeddings()
 # %%
-import torch
-e = torch.nn.Embedding(21128,128)
-# %%
-e.weight.data.copy_(embedding.weight)
-# %%
-torch.save(embedding,r"C:\Users\LongRed\code\TextClassification\dataset\albert_tiny_zh\embedding.pt")
-# %%
-pred = torch.load(r"C:\Users\LongRed\code\TextClassification\dataset\albert_tiny_zh\embedding.pt")
+from transformers import AutoTokenizer, AutoModelForMaskedLM
 
+tokenizer = AutoTokenizer.from_pretrained("bert-base-chinese")
+
+model = AutoModelForMaskedLM.from_pretrained("bert-base-chinese")
+#%%
+embedding = model.get_input_embeddings()
 # %%
-e = pred
+import torch
+torch.save(embedding,r"/home/longred/code/TextClassification/dataset/embedding/bert-base-chinese.pt")
 # %%
-e.weight.size()
+
 # %%

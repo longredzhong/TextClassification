@@ -1,41 +1,26 @@
 import torch
 import torch.nn as nn
 import torch.nn.functional as F
+
 class TextCNN(nn.Module):
-    def __init__(self,config):
-        super(TextCNN,self).__init__()
+    def __init__(self, config):
+        super(TextCNN, self).__init__()
         self.WordEmbedding = torch.load(config.embedding_path)
         WordVectorsDim = self.WordEmbedding.embedding_dim
-        self.conv3 = nn.Conv1d(WordVectorsDim, 256, 3)
-        self.conv4 = nn.Conv1d(WordVectorsDim, 256, 4)
-        self.conv5 = nn.Conv1d(WordVectorsDim, 256, 5)
-        # self.Max3_pool = nn.AdaptiveMaxPool1d(1)
-        # self.Max4_pool = nn.AdaptiveMaxPool1d(1)
-        # self.Max5_pool = nn.AdaptiveMaxPool1d(1)
-        self.avg_pool =nn.AdaptiveAvgPool1d(1)
-        self.label_size = config.label_size
+        self.convs = nn.ModuleList(
+            [nn.Conv2d(1, 256, (k, WordVectorsDim)) for k in [2,3,4]])
+        self.dropout = nn.Dropout(config.dropout)
+        self.fc = nn.Linear(256 * len([2,3,4]), config.num_classes)
 
-        self.fc = nn.Linear(256*3, self.label_size)
-
-    def forward(self, input):
-        x = self.WordEmbedding(input)
-        # print(x.size())
-        x = x.permute(0,2,1)
-        # Convolution
-        x1 = F.relu(self.conv3(x))
-        x2 = F.relu(self.conv4(x))
-        x3 = F.relu(self.conv5(x))
-
-        # Pooling
-        # x1 = self.Max3_pool(x1)
-        # x2 = self.Max4_pool(x2)
-        # x3 = self.Max5_pool(x3)
-        x1 = self.avg_pool(x1)
-        x2 = self.avg_pool(x2)
-        x3 = self.avg_pool(x3)
-        # capture and concatenate the features
-        x = torch.cat((x1, x2, x3), 1)
-        x = x.view(-1,x.size(1))
-        
-        x = self.fc(x)
+    def conv_and_pool(self, x, conv):
+        x = F.relu(conv(x)).squeeze(3)
+        x = F.max_pool1d(x, x.size(2)).squeeze(2)
         return x
+
+    def forward(self, x):
+        out = self.WordEmbedding(x)
+        out = out.unsqueeze(1)
+        out = torch.cat([self.conv_and_pool(out, conv) for conv in self.convs], 1)
+        out = self.dropout(out)
+        out = self.fc(out)
+        return out

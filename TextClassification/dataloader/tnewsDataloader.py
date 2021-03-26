@@ -26,8 +26,7 @@ class tnewsDataset(Dataset):
     def preprocess(self,tokenizer):
         for tmp in self.sentence:
             t= tokenizer.encode(tmp)
-            self.input.append(toTensor(t[0]))
-            self.ids_mask.append(toTensor(t[1]))
+            self.input.append(toTensor(t))
         self.label = toTensor(self.label)
 
     def load_data(self,raw_path):
