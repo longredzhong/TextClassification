@@ -6,6 +6,7 @@ class TextCNN(nn.Module):
     def __init__(self, embedding_path,num_classes):
         super(TextCNN, self).__init__()
         self.WordEmbedding = torch.load(embedding_path)
+        self.WordEmbedding.weight.requires_grad = False
         WordVectorsDim = self.WordEmbedding.embedding_dim
         self.convs = nn.ModuleList(
             [nn.Conv2d(1, 256, (k, WordVectorsDim)) for k in [2,3,4]])

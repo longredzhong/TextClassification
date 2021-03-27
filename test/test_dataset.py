@@ -18,7 +18,28 @@ token = Tokenizer(
 
 train,val,nclass = get_dataloader(path,token)
 # %%
-train_dataset = tnewsDataset(r"/home/longred/code/TextClassification/dataset/tnews_public/train.json",token)
+train_dataset = tnewsDataset(r"/home/longred/code/TextClassification/dataset/iflytek/train.json",token)
 # %%
 set(train_dataset.label.tolist())
+# %%
+sentence = train_dataset.sentence
+# %%
+len(sentence[0])
+# %%
+sum = 0
+min_len = 100
+max_len =0
+for i in sentence:
+    l = len(i)
+    if l<min_len:
+        min_len = l
+    if l>max_len:
+        max_len = l
+    sum+=l
+# %%
+sum/len(sentence)
+# %%
+max_len
+# %%
+min_len
 # %%

@@ -7,6 +7,12 @@ import os
 from TextClassification.utils.util import toTensor,sequence_padding
 
 class tnewsDataset(Dataset):
+    '''
+    avg len 22.13
+    max len 145
+    min len 2
+    nclass 15
+    '''
     def __init__(self,raw_path,tokenizer) -> None:
         self.sentence = []
         self.input = []

@@ -7,6 +7,12 @@ import os
 from TextClassification.utils.util import toTensor,sequence_padding
 
 class iflytekDataset(Dataset):
+    '''
+    avg len 289.03
+    max len 4282
+    min len 10
+    nclass 119
+    '''
     def __init__(self,raw_path,tokenizer) -> None:
         self.sentence = []
         self.input = []
