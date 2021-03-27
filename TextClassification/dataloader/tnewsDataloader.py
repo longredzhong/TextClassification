@@ -14,7 +14,7 @@ class tnewsDataset(Dataset):
         self.label = []
         self.load_data(raw_path)
         self.preprocess(tokenizer)
-        self.n_class = len(set(self.label))
+        self.n_class = len(set(self.label.tolist()))
         super().__init__()
         
     def __getitem__(self, index):
