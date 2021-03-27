@@ -21,6 +21,7 @@ class TextCNN(nn.Module):
         out = self.WordEmbedding(x)
         out = out.unsqueeze(1)
         out = torch.cat([self.conv_and_pool(out, conv) for conv in self.convs], 1)
+        out = F.relu(out)
         out = self.dropout(out)
         out = self.fc(out)
         return out
