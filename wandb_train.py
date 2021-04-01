@@ -8,20 +8,26 @@ import wandb
 from TextClassification.trainer import TextTrainer
 from TextClassification.utils.tokenizers import Tokenizer
 
-wandb.init(project="Textclassification")
+wandb.init(project="Textclassification_iflytek")
 config = wandb.config
-config.datasetname = "tnews"
-config.model = "TextRNNAttention"
-config.batchsize = 32
-config.device = torch.device('cuda:0' if torch.cuda.is_available() else 'cpu')
-config.learning_rate = 0.0000005
+# config.update.allow_val_change=True
+config.datasetname = "iflytek"
+config.model = "Gate_TCN"
+config.batchsize = 128
+config.device = torch.device('cuda:1' if torch.cuda.is_available() else 'cpu')
+config.learning_rate = 0.00001
+
 config.dataset_path = r"/home/longred/code/TextClassification/dataset"
 config.embedding_path = r"/home/longred/code/TextClassification/dataset/embedding/bert-base-chinese.pt"
 config.seed = 777
-config.num_epochs = 500
-config.num_channels = [256, 256]  # TCN
+config.num_epochs = 200
+config.num_channels = [256,256,256]  # TCN
 config.num_filters = 256  # DPCNN
+config.kernel_size=3
+config.max_pool_size = 1
 
+torch.manual_seed(config.seed)
+torch.cuda.manual_seed(config.seed)
 
 def main(config):
     tokenizer = Tokenizer(
@@ -48,7 +54,15 @@ def main(config):
     if config.model == "TCN":
         from TextClassification.models.TCN_text_classification import TCN
         model = TCN(config.embedding_path, num_classes,
-                    config.num_channels).to(config.device)
+                    config.num_channels,config.kernel_size,config.max_pool_size).to(config.device)
+    if config.model == "Gate_TCN":
+        from TextClassification.models.TCN_text_classification import Gate_TCN
+        model = Gate_TCN(config.embedding_path, num_classes,
+                    config.num_channels,config.kernel_size,config.max_pool_size).to(config.device)
+    if config.model == "TCNAttention":
+        from TextClassification.models.TCN_text_classification import TCN_attention
+        model = TCN_attention(config.embedding_path, num_classes,
+                    config.num_channels,config.kernel_size).to(config.device)
     if config.model == "DPCNN":
         from TextClassification.models.DPCNN import DPCNN
         model = DPCNN(config.embedding_path, config.num_filters,
@@ -87,6 +101,5 @@ def main(config):
             "dev F1": f1,
             "epoch": i+1
         })
-
 
 main(config)

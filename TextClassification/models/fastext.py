@@ -12,7 +12,6 @@ class FastText(nn.Module):
 
     def forward(self, x):
         out = self.WordEmbedding(x)
-
         out = out.mean(dim=1)
         out = self.dropout(out)
         out = F.relu(out)

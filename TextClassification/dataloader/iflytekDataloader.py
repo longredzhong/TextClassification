@@ -31,7 +31,7 @@ class iflytekDataset(Dataset):
 
     def preprocess(self,tokenizer):
         for tmp in self.sentence:
-            t= tokenizer.encode(tmp)
+            t= tokenizer.encode(tmp,maxlen=512)
             self.input.append(toTensor(t))
         self.label = toTensor(self.label)
 
@@ -60,5 +60,5 @@ def get_dataloader(raw_path,tokenizer,batch_size=32):
     nums_class = train_dataset.n_class
     dev_dataset = iflytekDataset(dev_path,tokenizer)
     train_dataloader =  DataLoader(train_dataset,batch_size=batch_size,shuffle=True,collate_fn=collate_pad)
-    dev_dataloader =  DataLoader(dev_dataset,batch_size=batch_size,shuffle=True,collate_fn=collate_pad)
+    dev_dataloader =  DataLoader(dev_dataset,batch_size=batch_size,shuffle=False,collate_fn=collate_pad)
     return train_dataloader,dev_dataloader,nums_class
